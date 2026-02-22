@@ -7,4 +7,4 @@ def get_db_connection():
         password="iphone6S369248!mysql", # Your MySQL password
         database="cloth_store" # Your MySQL database name
     )
-    return connection
+    return connection 
