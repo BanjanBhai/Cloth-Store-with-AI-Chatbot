@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cloth Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <nav>
+        <div class="container">
+            <!-- Logo -->
+            <h2 style="margin: 0;">
+                <a href="/" style="color: white; text-decoration: none;">Cloth Store</a>
+            </h2>
+
+            <!-- Navigation Links -->
+            <div class="nav-links">
+                <a href="/">Home</a>
+
+                {% if session.get('username') %}
+                <span class="user-welcome">Welcome, {{ session['username'] }}</span>
+
+                {% if session.get('role') == 'admin' %}
+                <a href="/admin">Admin Panel</a>
+                <a href="/admin">Products</a>
+                <a href="/admin/orders">Orders</a>
+                {% endif %}
+
+                <a href="/logout" style="color: #ff7675;">Logout</a>
+                {% else %}
+                <a href="/login">Login</a>
+                <a href="/signup">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Floating Chatbot Toggle -->
+    <div id="chat-circle" onclick="toggleChat()"
+        style="position: fixed; bottom: 20px; right: 20px; background: #2c3e50; color: white; padding: 15px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000;">
+        💬
+    </div>
+
+    <!-- Chatbox -->
+    <div id="chat-box"
+        style="display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); flex-direction: column; z-index: 1000;">
+        <div style="background: #2c3e50; color: white; padding: 15px; border-radius: 10px 10px 0 0;">Store Assistant
+        </div>
+        <div id="chat-content" style="flex: 1; padding: 10px; overflow-y: auto; font-size: 0.9em;">
+            <p><strong>Bot:</strong> Hello! How can I help you today?</p>
+        </div>
+        <div style="padding: 10px; border-top: 1px solid #ddd; display: flex;">
+            <input type="text" id="chat-input" placeholder="Type a message..."
+                style="flex: 1; border: none; outline: none;">
+            <button onclick="sendMessage()"
+                style="background: none; border: none; color: #3498db; cursor: pointer; font-weight: bold;">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            var chat = document.getElementById('chat-box');
+            chat.style.display = (chat.style.display === 'none' || chat.style.display === '') ? 'flex' : 'none';
+        }
+
+        async function sendMessage() {
+            let input = document.getElementById('chat-input');
+            let content = document.getElementById('chat-content');
+            if (input.value.trim() === "") return;
+
+            content.innerHTML += `<p><strong>You:</strong> ${input.value}</p>`;
+
+            // Send to Python Backend
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: input.value })
+            });
+            const data = await response.json();
+
+            content.innerHTML += `<p><strong>Bot:</strong> ${data.reply}</p>`;
+            input.value = "";
+            content.scrollTop = content.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>

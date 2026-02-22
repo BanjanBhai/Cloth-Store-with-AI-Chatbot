@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <nav>
+        <a href="/">Storefront</a> | <a href="/admin">Back to Dashboard</a>
+    </nav>
+
+    <div class="container">
+        <h1>Edit Product: {{ product.name }}</h1>
+
+        <form method="POST">
+            <label>Product Name:</label><br>
+            <input type="text" name="name" value="{{ product.name }}" required><br><br>
+
+            <label>Category:</label><br>
+            <input type="text" name="category" value="{{ product.category }}"><br><br>
+
+            <label>Price:</label><br>
+            <input type="number" step="0.01" name="price" value="{{ product.price }}" required><br><br>
+
+            <label>Stock Quantity:</label><br>
+            <input type="number" name="stock" value="{{ product.stock_quantity }}" required><br><br>
+
+            <!-- IMAGE INPUT REMOVED FROM HERE -->
+
+            <label>Description:</label><br>
+            <textarea name="description" rows="5">{{ product.description }}</textarea><br><br>
+
+            <button type="submit" class="btn">Save Changes</button>
+        </form>
+    </div>
+</body>
+
+</html>

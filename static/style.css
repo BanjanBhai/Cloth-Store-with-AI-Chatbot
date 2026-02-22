@@ -1,0 +1,155 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Navigation */
+nav {
+    background: #2c3e50;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+/* Main Container */
+.container {
+    width: 80%;
+    margin: 20px auto;
+}
+
+/* Product Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.product-card h3 {
+    margin: 10px 0;
+    color: #2c3e50;
+}
+
+.price {
+    font-weight: bold;
+    color: #e67e22;
+    font-size: 1.2rem;
+}
+
+.stock {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 8px 15px;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background: #2980b9;
+}
+
+/* Admin Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #2c3e50;
+    color: white;
+}
+/* Styled Admin Form */
+.admin-form-container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.admin-form-container input, 
+.admin-form-container textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box; /* Important for alignment */
+}
+
+.admin-form-container button {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.admin-form-container button:hover {
+    background: #219150;
+}
+
+/* Navbar Styling Improvements */
+nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* This creates the perfect gap between Home, Welcome, and Logout */
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #3498db;
+}
+
+.user-welcome {
+    color: #bdc3c7;
+    font-size: 0.9rem;
+    font-style: italic;
+}

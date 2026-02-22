@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header style="text-align: center; padding: 40px 0; background: #fff; margin-bottom: 20px; border-radius: 10px;">
+    <h1>Premium Apparel</h1>
+    <p>Modern styles for the modern you.</p>
+</header>
+
+<!-- Search Bar -->
+<form action="/" method="GET" style="margin-bottom: 30px; display: flex; gap: 10px;">
+    <input type="text" name="search" placeholder="Search for clothes..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+    <button type="submit" class="btn" style="margin-top: 0;">Search</button>
+</form>
+
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <!-- 1. The Name is now a link to the detail page -->
+        <h3>
+            <a href="/product/{{ product.id }}" style="text-decoration: none; color: inherit;">
+                {{ product.name }}
+            </a>
+        </h3>
+
+        <p style="color: #666; font-size: 0.9em; height: 40px; overflow: hidden;">{{ product.description }}</p>
+        
+        <p class="price">${{ product.price }}</p>
+        <p class="stock">Only {{ product.stock_quantity }} left!</p>
+        
+        <!-- 2. The Buttons are now side-by-side -->
+        <div style="display: flex; gap: 5px;">
+            <!-- Gray button for details -->
+            <a href="/product/{{ product.id }}" class="btn" style="background: #95a5a6; flex: 1; font-size: 0.8rem;">Details</a>
+            
+            <!-- Blue button for buying -->
+            <a href="/buy/{{ product.id }}" class="btn" style="flex: 2; font-size: 0.8rem;">Buy Now</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
