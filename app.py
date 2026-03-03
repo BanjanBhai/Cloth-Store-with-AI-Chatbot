@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from database import get_db_connection
+from chatbot import ask_chatbot
+
 
 app = Flask(__name__)
 app.secret_key = "secret123" # Required for flashing messages
@@ -100,44 +102,17 @@ def product_detail(product_id):
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get('message').lower()
-    user_id = session.get('user_id')
-    
-    # Default Reply
-    reply = "I can help you with 'prices', 'products', or 'track my order'."
-
-    if "track" in user_message or "status" in user_message:
-        if not user_id:
-            reply = "Please login first so I can find your orders!"
-        else:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            # Find the latest shipment for this user
-            query = """
-                SELECT s.status, s.updated_at, p.name 
-                FROM shipments s
-                JOIN orders o ON s.order_id = o.id
-                JOIN order_items oi ON o.id = oi.order_id
-                JOIN products p ON oi.product_id = p.id
-                WHERE o.user_id = %s
-                ORDER BY s.updated_at DESC LIMIT 1
-            """
-            cursor.execute(query, (user_id,))
-            order = cursor.fetchone()
-            cursor.close()
-            conn.close()
-
-            if order:
-                reply = f"Your latest order for '{order['name']}' is currently: **{order['status'].upper()}**. (Last update: {order['updated_at']})"
-            else:
-                reply = "You haven't placed any orders yet!"
-
-    elif "price" in user_message:
-        reply = "Our prices are very competitive! Most items are between $15 and $90."
-    elif "hi" in user_message or "hello" in user_message:
-        reply = "Hi there! Want to 'track an order' or 'browse products'?"
-
-    return jsonify({"reply": reply})
+    try:
+        user_data = request.json
+        user_message = user_data.get("message")
+        if not user_message:
+            return jsonify({"reply": "I didn't hear anything!"})
+            
+        bot_reply = ask_chatbot(user_message)
+        return jsonify({"reply": bot_reply})
+    except Exception as e:
+        print(f"Flask Route Error: {e}")
+        return jsonify({"reply": "Sorry, I am experiencing a server error."}), 500
 
 # --- ADMIN SIDE ---
 @app.route('/admin')

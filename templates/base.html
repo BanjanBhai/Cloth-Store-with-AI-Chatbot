@@ -1,38 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>Cloth Store</title>
+    <title>TrendThread</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Load Marked.js globally here -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div>
+            <h4>TRENDTHREAD</h4>
+            <p>Elevating your everyday style with premium apparel.</p>
+        </div>
+        <div>
+            <h5>Customer Care</h5>
+            <ul>
+                <li><a href="#">Shipping Policy</a></li>
+                <li><a href="#">Returns & Exchanges</a></li>
+            </ul>
+        </div>
+        <div>
+            <h5>Follow Us</h5>
+            <div class="social-icons">
+                <i class="fa-brands fa-instagram"></i>
+                <i class="fa-brands fa-facebook"></i>
+                <i class="fa-brands fa-twitter"></i>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">© 2026 TrendThread Inc. All Rights Reserved.</div>
+</footer>
+
 <body>
-    <nav>
-        <div class="container">
-            <!-- Logo -->
-            <h2 style="margin: 0;">
-                <a href="/" style="color: white; text-decoration: none;">Cloth Store</a>
-            </h2>
-
-            <!-- Navigation Links -->
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="/" class="logo">TREND<span>THREAD</span></a>
             <div class="nav-links">
-                <a href="/">Home</a>
-
-                {% if session.get('username') %}
-                <span class="user-welcome">Welcome, {{ session['username'] }}</span>
-
-                {% if session.get('role') == 'admin' %}
-                <a href="/admin">Admin Panel</a>
-                <a href="/admin">Products</a>
-                <a href="/admin/orders">Orders</a>
-                {% endif %}
-
-                <a href="/logout" style="color: #ff7675;">Logout</a>
-                {% else %}
-                <a href="/login">Login</a>
-                <a href="/signup">Sign Up</a>
-                {% endif %}
+                <a href="/">Shop All</a>
+                <a href="/admin">Dashboard</a>
+                <a href="#" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i><span>0</span></a>
             </div>
         </div>
     </nav>
@@ -41,52 +51,82 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Floating Chatbot Toggle -->
-    <div id="chat-circle" onclick="toggleChat()"
-        style="position: fixed; bottom: 20px; right: 20px; background: #2c3e50; color: white; padding: 15px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000;">
-        💬
-    </div>
-
-    <!-- Chatbox -->
-    <div id="chat-box"
-        style="display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); flex-direction: column; z-index: 1000;">
-        <div style="background: #2c3e50; color: white; padding: 15px; border-radius: 10px 10px 0 0;">Store Assistant
+    <!-- START OF GLOBAL CHATBOT -->
+    <div id="chat-container">
+        <div id="chat-window" style="display: none;">
+            <div id="chat-header">TrendThread Assistant</div>
+            <div id="chat-messages"></div>
+            <div id="chat-input-area">
+                <input type="text" id="user-input" placeholder="Type a message...">
+                <button onclick="sendMessage()" id="send-btn">Send</button>
+            </div>
         </div>
-        <div id="chat-content" style="flex: 1; padding: 10px; overflow-y: auto; font-size: 0.9em;">
-            <p><strong>Bot:</strong> Hello! How can I help you today?</p>
-        </div>
-        <div style="padding: 10px; border-top: 1px solid #ddd; display: flex;">
-            <input type="text" id="chat-input" placeholder="Type a message..."
-                style="flex: 1; border: none; outline: none;">
-            <button onclick="sendMessage()"
-                style="background: none; border: none; color: #3498db; cursor: pointer; font-weight: bold;">Send</button>
-        </div>
+        <button id="chat-toggle" type="button">💬</button>
     </div>
 
     <script>
-        function toggleChat() {
-            var chat = document.getElementById('chat-box');
-            chat.style.display = (chat.style.display === 'none' || chat.style.display === '') ? 'flex' : 'none';
-        }
+        const chatWindow = document.getElementById('chat-window');
+        const chatToggle = document.getElementById('chat-toggle');
+        const userInput = document.getElementById('user-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Toggle Chat
+        chatToggle.onclick = () => {
+            chatWindow.style.display = (chatWindow.style.display === 'none' || chatWindow.style.display === '') ? 'flex' : 'none';
+        };
+
+        // Enter Key
+        userInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
         async function sendMessage() {
-            let input = document.getElementById('chat-input');
-            let content = document.getElementById('chat-content');
-            if (input.value.trim() === "") return;
+            const msg = userInput.value.trim();
+            if (!msg) return;
 
-            content.innerHTML += `<p><strong>You:</strong> ${input.value}</p>`;
+            appendMessage(msg, 'user-msg');
+            userInput.value = '';
 
-            // Send to Python Backend
-            const response = await fetch('/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: input.value })
-            });
-            const data = await response.json();
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'msg bot-msg';
+            typingDiv.id = 'temp-typing';
+            typingDiv.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            content.innerHTML += `<p><strong>Bot:</strong> ${data.reply}</p>`;
-            input.value = "";
-            content.scrollTop = content.scrollHeight;
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await response.json();
+
+                const temp = document.getElementById('temp-typing');
+                if (temp) temp.remove();
+
+                appendMessage(data.reply, 'bot-msg');
+            } catch (e) {
+                const temp = document.getElementById('temp-typing');
+                if (temp) temp.remove();
+                appendMessage("Connection error.", 'bot-msg');
+            }
+        }
+
+        function appendMessage(text, className) {
+            const div = document.createElement('div');
+            div.className = `msg ${className}`;
+            if (className === 'bot-msg') {
+                let formattedText = text.replace(/([^\n])\n\|/g, "$1\n\n|");
+                div.innerHTML = marked.parse(formattedText);
+            } else {
+                div.innerText = text;
+            }
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
     </script>
 </body>

@@ -1,39 +1,57 @@
 {% extends "base.html" %}
 
 {% block content %}
-<header style="text-align: center; padding: 40px 0; background: #fff; margin-bottom: 20px; border-radius: 10px;">
-    <h1>Premium Apparel</h1>
-    <p>Modern styles for the modern you.</p>
-</header>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-<!-- Search Bar -->
-<form action="/" method="GET" style="margin-bottom: 30px; display: flex; gap: 10px;">
-    <input type="text" name="search" placeholder="Search for clothes..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-    <button type="submit" class="btn" style="margin-top: 0;">Search</button>
-</form>
+<!-- 1. HERO SECTION (The "Real Store" look) -->
+<section class="hero-banner">
+    <div class="hero-content">
+        <h1>Summer Collection 2024</h1>
+        <p>Premium quality fabrics meets modern silhouettes.</p>
+        <a href="#shop" class="hero-btn">Shop Now</a>
+    </div>
+</section>
 
+<!-- 2. SEARCH & FILTER SECTION -->
+<div class="shop-controls" id="shop">
+    <div class="section-title">
+        <h2>Featured Products</h2>
+        <div class="accent-line"></div>
+    </div>
+
+    <form action="/" method="GET" class="search-form">
+        <input type="text" name="search" placeholder="Search our collection..."
+            value="{{ request.args.get('search', '') }}">
+        <button type="submit"><i class="fa fa-search"></i> Search</button>
+    </form>
+</div>
+
+<!-- 3. PRODUCT GRID -->
 <div class="product-grid">
     {% for product in products %}
     <div class="product-card">
-        <!-- 1. The Name is now a link to the detail page -->
-        <h3>
-            <a href="/product/{{ product.id }}" style="text-decoration: none; color: inherit;">
-                {{ product.name }}
-            </a>
-        </h3>
+        <div class="badge">New Arrival</div>
+        <div class="product-image">
+            <!-- Replace the old img tag with this neutral placeholder -->
+            <div class="no-image-placeholder">
+                <i class="fa-solid fa-shirt"></i>
+                <span>Image Coming Soon</span>
+            </div>
+        </div>
 
-        <p style="color: #666; font-size: 0.9em; height: 40px; overflow: hidden;">{{ product.description }}</p>
-        
-        <p class="price">${{ product.price }}</p>
-        <p class="stock">Only {{ product.stock_quantity }} left!</p>
-        
-        <!-- 2. The Buttons are now side-by-side -->
-        <div style="display: flex; gap: 5px;">
-            <!-- Gray button for details -->
-            <a href="/product/{{ product.id }}" class="btn" style="background: #95a5a6; flex: 1; font-size: 0.8rem;">Details</a>
-            
-            <!-- Blue button for buying -->
-            <a href="/buy/{{ product.id }}" class="btn" style="flex: 2; font-size: 0.8rem;">Buy Now</a>
+        <div class="product-details">
+            <span class="category-tag">{{ product.category if product.category else 'Apparel' }}</span>
+            <h3>{{ product.name }}</h3>
+            <p class="desc">{{ product.description[:60] }}...</p>
+            <div class="price-row">
+                <span class="price">${{ product.price }}</span>
+                <span class="stock-status">{{ product.stock_quantity }} in stock</span>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/product/{{ product.id }}" class="btn-secondary">View Details</a>
+                <a href="/buy/{{ product.id }}" class="btn-primary">Add to Bag</a>
+            </div>
         </div>
     </div>
     {% endfor %}
