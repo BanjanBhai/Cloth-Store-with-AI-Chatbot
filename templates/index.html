@@ -6,7 +6,7 @@
 <!-- 1. HERO SECTION (The "Real Store" look) -->
 <section class="hero-banner">
     <div class="hero-content">
-        <h1>Summer Collection 2024</h1>
+        <h1>Summer Collection 2026</h1>
         <p>Premium quality fabrics meets modern silhouettes.</p>
         <a href="#shop" class="hero-btn">Shop Now</a>
     </div>
@@ -50,7 +50,7 @@
 
             <div class="action-buttons">
                 <a href="/product/{{ product.id }}" class="btn-secondary">View Details</a>
-                <a href="/buy/{{ product.id }}" class="btn-primary">Add to Bag</a>
+                <button class="btn-primary add-to-bag-btn" data-id="{{ product.id }}">Add to Bag</button>
             </div>
         </div>
     </div>

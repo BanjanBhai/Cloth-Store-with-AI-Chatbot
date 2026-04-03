@@ -42,7 +42,7 @@
             <div class="nav-links">
                 <a href="/">Shop All</a>
                 <a href="/admin">Dashboard</a>
-                <a href="#" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i><span>0</span></a>
+                <a href="#" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i><span id="cart-count">0</span></a>
             </div>
         </div>
     </nav>
@@ -127,6 +127,41 @@
             }
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function addToCart(productID) {
+            try {
+                const response = await fetch('/add_to_cart' + productID, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productID })
+                });
+
+                if (response.status == 401) {
+                    window.location.href = "/login"; //redirect to login if not logged in
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.success) { // update number in navbar cart icon
+                    const cartBadge = document.querySelector('.cart-icon span');
+                    if (cartBadge) { cartBadge.innertext = data.cart_count || data.total_items };
+
+                    alert("Item added to cart!");
+                }
+            }
+            catch (e) {
+                console.error("Error adding to cart.", e);
+            }
+            
+            //this code runs when the page loads and add attaches function to uttons
+            docuent.addEventListener('click', function(event){
+                if(event.target.classlist.contains('add-to-bag-btn')){
+                    const productID = event.target.getAttribute('data-id');
+                    addToCart(productID);
+                }
+            })
+
         }
     </script>
 </body>

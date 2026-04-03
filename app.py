@@ -105,11 +105,15 @@ def chat():
     try:
         user_data = request.json
         user_message = user_data.get("message")
+        # Retrieve the user_id from the session (will be None if not logged in)
+        current_user_id = session.get('user_id')
         if not user_message:
             return jsonify({"reply": "I didn't hear anything!"})
             
-        bot_reply = ask_chatbot(user_message)
+        bot_reply = ask_chatbot(user_message, current_user_id)
+
         return jsonify({"reply": bot_reply})
+    
     except Exception as e:
         print(f"Flask Route Error: {e}")
         return jsonify({"reply": "Sorry, I am experiencing a server error."}), 500
@@ -241,15 +245,133 @@ def login():
             session['username'] = user['username']
             session['role'] = user['role']
             flash("Login successful!")
-            return redirect(url_for('admin_dashboard') if user['role'] == 'admin' else url_for('index'))
+            if user['role'] == 'admin':
+                return redirect(url_for('admin_dashboard'))
+            else:
+                return redirect(url_for('index'))
+            
         else:
             flash("Invalid credentials.")
+
+        
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+@app.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    #1 check login
+    if 'user_id' not in session:
+        return jsonify({"status": "unauthorized"}), 401
+    
+    data = request.get_json()
+    product_id = str(data.get('product_id')) # session keys must be str
+
+    #2 initialize cart if not exist
+    if 'cart' not in session:
+        session['cart']={}
+
+    #3 update quantity. clicking multiple times increases count
+    cart = session['cart']
+    cart[product_id] = cart.get(product_id, 0) + 1
+
+    #4 reassign and mark as modified
+    session['cart'] = cart
+    session.modified = True
+
+    #5 calaculate total items for navbar badge
+    total_items = sum(cart.values()) 
+
+    return jsonify({"status": "success", "total_items": total_items, "message": "Item added to bag!"})
+
+@app.route('/cart')
+def view_cart():
+    if 'user_id' not in session: return redirect('/login')
+
+    cart = session.get('cart')
+    display_cart = []
+    grand_total = 0
+
+    if cart:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        #fetch only the proucts in session cart
+        placeholders = ', '.join(['%s'] * len(cart))
+        query = f"SELECT id, name, price FROM products WHERE id in({placeholders})"
+        cursor.execute(quesry, list(cart.keys()))
+        products = cursor.fetchall()
+
+        for p in products:
+            qty = cart[str(p['id'])]
+            subtotal=p['price']*qty
+            grand_total += subtotal
+            display_cart.append({
+                'id':p['id'],
+                'name':p['name'],
+                'price':p['price'],
+                'quantity': qty,
+                'subtotal': subtotal
+            })
+
+        cursor.close()
+        conn.close()
+
+    return render_template('cart.html', cart=display_cart, grand_total=grand_total)
+
+@app.route('/checkout', methods=['POST'])
+def checkout():
+    user_id = session.get('user_id')
+    cart= session.get('cart')
+    payment_method = request.form.get('payment_method')
+
+    if not cart: return redirect('/')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        #1 create one order record
+        cursor.execute("INSERT INTO orders (user_id, status) values (%s, 'paid')", (user_id,))
+        order_id=cursor.lastrowid
+
+        total_amount=0
+
+        #2 loop through session cart to create many order items
+        for p_id, qty in cart.items():
+            cursor.execute("SELECT price from products where id=%s", (p_id,))
+            price=cursor.fetchone()[0]
+
+            #insert into order_items
+            cursor.execute("""
+                INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase)
+                VALUES (%s, %s, %s, %s)
+                           """, (order_id, p_id, qty, price))
+            
+            total_amount += (price*qty)
+
+        #3 create payment record
+        cursor.execute("""
+            INSERT INTO payments (order_id, amount, method) 
+            VALUES (%s, %s, %s) """, (order_id, total_amount, payment_method))
+        
+        cursor.execute("INSERT INTO shipments (order_id, status) Values (%s, pending)", (order_id,))
+
+        #4 clear session after successful checkout
+        session.pop('cart', None)
+        conn.commit()
+
+        return render_template('checkout_success.html', order_id=order_id, total_amount=total_amount)
+    
+    except Exception as e:
+        conn.rollback()
+        return f"Error: {str(e)}"
+    
+    finally:
+        conn.close()
 
 
 if __name__ == '__main__':
