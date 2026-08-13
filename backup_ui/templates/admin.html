@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="/">Storefront</a> | <a href="/admin">Admin Dashboard</a> | <a href="/logout">Logout</a>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div style="background-color: #d4edda; color: #155724; padding: 10px; border: 1px solid #c3e6cb; margin-bottom: 20px; border-radius: 5px;">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <h1>Admin Dashboard - Manage Products</h1>
+
+        <!-- Styled Admin Form (Only this one kept) -->
+        <div class="admin-form-container">
+            <h3>Add New Product</h3>
+            <form action="/admin/add" method="POST">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <input type="text" name="name" placeholder="Product Name" required>
+                    <input type="text" name="category" placeholder="Category">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <input type="number" step="0.01" name="price" placeholder="Price" required>
+                    <input type="number" name="stock" placeholder="Stock Quantity" required>
+                </div>
+                <textarea name="description" placeholder="Short Description"></textarea>
+                <button type="submit">Add Product to Inventory</button>
+            </form>
+        </div>
+
+        <!-- Product Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category }}</td>
+                    <td>${{ product.price }}</td>
+                    <td>{{ product.stock_quantity }}</td>
+                    <td>
+                        <a href="/admin/edit/{{ product.id }}" style="color: #3498db; text-decoration: none; font-weight: bold;">Edit</a> | 
+                        <a href="/admin/delete/{{ product.id }}" onclick="return confirm('Are you sure?')" style="color: #e74c3c; text-decoration: none; font-weight: bold;">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

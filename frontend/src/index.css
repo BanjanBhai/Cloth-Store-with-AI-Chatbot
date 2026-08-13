@@ -1,0 +1,38 @@
+:root {
+    --sidebar-bg: #2c3e50;
+    --main-bg: #f8f9fa;
+    --primary: #3498db;
+    --danger: #e74c3c;
+    --success: #27ae60;
+}
+
+.admin-container { display: flex; min-height: 100vh; font-family: sans-serif; }
+
+/* Sidebar */
+.admin-sidebar { width: 250px; background: var(--sidebar-bg); color: white; padding: 20px; }
+.admin-sidebar h3 { border-bottom: 1px solid #555; padding-bottom: 10px; }
+.admin-sidebar ul { list-style: none; padding: 0; margin-top: 20px; }
+.admin-sidebar li { padding: 12px; cursor: pointer; border-radius: 5px; margin-bottom: 5px; }
+.admin-sidebar li.active { background: var(--primary); }
+
+/* Main Area */
+.admin-main { flex: 1; background: var(--main-bg); padding: 30px; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+/* Status Banners */
+.status-banner { padding: 10px 20px; border-radius: 5px; color: white; font-weight: bold; }
+.status-banner.success { background: var(--success); }
+.status-banner.error { background: var(--danger); }
+
+/* Form */
+.admin-form { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+.form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+.admin-form input, .admin-form textarea { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; }
+.save-btn { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; }
+
+/* Table */
+.admin-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+.admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+.admin-table th { background: #eee; }
+.delete-btn { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 3px; cursor: pointer; transition: 0.3s; }
+.delete-btn:hover { background: var(--danger); color: white; }

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Manage Shipments</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Current Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.username }}</td>
+                <td>{{ order.order_date }}</td>
+                <td><strong>{{ order.ship_status }}</strong></td>
+                <td>
+                    <a href="/admin/update_shipment/{{ order.ship_id }}/shipped" style="color: blue;">Mark Shipped</a> | 
+                    <a href="/admin/update_shipment/{{ order.ship_id }}/delivered" style="color: green;">Mark Delivered</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}  

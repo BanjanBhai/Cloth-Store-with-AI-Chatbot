@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- 1. HERO SECTION (The "Real Store" look) -->
+<section class="hero-banner">
+    <div class="hero-content">
+        <h1>Summer Collection 2026</h1>
+        <p>Premium quality fabrics meets modern silhouettes.</p>
+        <a href="#shop" class="hero-btn">Shop Now</a>
+    </div>
+</section>
+
+<!-- 2. SEARCH & FILTER SECTION -->
+<div class="shop-controls" id="shop">
+    <div class="section-title">
+        <h2>Featured Products</h2>
+        <div class="accent-line"></div>
+    </div>
+
+    <form action="/" method="GET" class="search-form">
+        <input type="text" name="search" placeholder="Search our collection..."
+            value="{{ request.args.get('search', '') }}">
+        <button type="submit"><i class="fa fa-search"></i> Search</button>
+    </form>
+</div>
+
+<!-- 3. PRODUCT GRID -->
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <div class="badge">New Arrival</div>
+        <div class="product-image">
+            <!-- Replace the old img tag with this neutral placeholder -->
+            <div class="no-image-placeholder">
+                <i class="fa-solid fa-shirt"></i>
+                <span>Image Coming Soon</span>
+            </div>
+        </div>
+
+        <div class="product-details">
+            <span class="category-tag">{{ product.category if product.category else 'Apparel' }}</span>
+            <h3>{{ product.name }}</h3>
+            <p class="desc">{{ product.description[:60] }}...</p>
+            <div class="price-row">
+                <span class="price">${{ product.price }}</span>
+                <span class="stock-status">{{ product.stock_quantity }} in stock</span>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/product/{{ product.id }}" class="btn-secondary">View Details</a>
+                <button class="btn-primary add-to-bag-btn" data-id="{{ product.id }}">Add to Bag</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
