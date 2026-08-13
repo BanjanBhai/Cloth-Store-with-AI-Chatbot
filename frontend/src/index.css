@@ -36,3 +36,27 @@
 .admin-table th { background: #eee; }
 .delete-btn { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 3px; cursor: pointer; transition: 0.3s; }
 .delete-btn:hover { background: var(--danger); color: white; }
+
+/* Storefront Layout */
+.store-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.hero { text-align: center; padding: 60px 0; background: #fff; margin-bottom: 30px; border-radius: 15px; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; }
+
+.product-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; }
+.product-card:hover { transform: translateY(-5px); }
+.product-card img { width: 100%; height: 300px; object-fit: cover; }
+.product-info { padding: 15px; text-align: center; }
+.details-link { display: inline-block; margin-top: 10px; color: #3498db; text-decoration: none; font-weight: bold; }
+
+/* Chatbot Styles */
+.chatbot-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+.chat-window { width: 300px; height: 400px; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; margin-bottom: 10px; }
+.chat-header { background: #2c3e50; color: white; padding: 15px; font-weight: bold; }
+.chat-body { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.chat-msg { padding: 8px 12px; border-radius: 10px; max-width: 80%; font-size: 0.9rem; }
+.chat-msg.user { align-self: flex-end; background: #3498db; color: white; }
+.chat-msg.bot { align-self: flex-start; background: #eee; }
+.chat-footer { display: flex; border-top: 1px solid #eee; }
+.chat-footer input { flex: 1; border: none; padding: 10px; }
+.chat-footer button { background: #3498db; color: white; border: none; padding: 10px 15px; cursor: pointer; }
+.chat-toggle { width: 60px; height: 60px; border-radius: 50%; background: #2c3e50; color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }

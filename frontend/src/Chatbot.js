@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { marked } from 'marked';
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);

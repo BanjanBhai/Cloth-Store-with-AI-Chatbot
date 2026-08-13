@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Storefront from './Storefront';
 import AdminDashboard from './AdminDashboard';
-import './index.css'; // Make sure your CSS is imported here
+import './index.css'; 
+import Chatbot from './Chatbot'; 
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
         <Route path="/" element={<Storefront />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
+
+      <Chatbot /> {/* This puts the bot on every page! */}
     </Router>
   );
 }

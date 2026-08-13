@@ -9,26 +9,28 @@ app.secret_key = "secret123" # Required for flashing messages
 
 CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
-@app.route('/api/products', methods=['GET'])
-def get_products():
+# Add this to backend/app.py
+
+@app.route('/api/products/<int:product_id>', methods=['GET'])
+def get_product_details(product_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM products")
-    products = cursor.fetchall()
+    cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+    product = cursor.fetchone()
     cursor.close()
     conn.close()
-    return jsonify(products)
+    if product:
+        return jsonify(product)
+    return jsonify({"error": "Product not found"}), 404
 
+# Ensure your chat route is ready
 @app.route('/api/chat', methods=['POST'])
 def chat():
     data = request.json
     user_message = data.get("message")
-
-    #pass user_id from session if logged in 
-    user_id = session.get('user_id')
-
-    bot_reply = ask_chatbot(user_message, user_id)
-    return jsonify({reply: bot_reply})
+    # For now, we pass None for user_id until we redo the login logic
+    bot_reply = ask_chatbot(user_message, None) 
+    return jsonify({"reply": bot_reply})
 
 @app.route('/api/admin/add', methods=['POST'])
 def admin_add_product():
