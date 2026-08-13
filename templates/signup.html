@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="max-width: 400px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <h2>Create Account</h2>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Choose Username" required style="width:100%; margin-bottom:15px; padding:10px;">
+        <input type="password" name="password" placeholder="Create Password" required style="width:100%; margin-bottom:15px; padding:10px;">
+        <button type="submit" class="btn" style="width:100%;">Sign Up</button>
+    </form>
+    <p style="margin-top:15px;">Already have an account? <a href="/login">Login here</a></p>
+</div>
+{% endblock %}

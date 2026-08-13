@@ -1,0 +1,18 @@
+# Ignore the virtual environment
+venv/
+.venv/
+env/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore environment variables (where your API keys live)
+.env
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+db.png
+AI_Powered_Cloth_Store_Action_Plan.docx
+AI_Powered_Cloth_Store_Action_Plan.pdf

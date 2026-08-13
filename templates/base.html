@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TrendThread</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Load Marked.js globally here -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div>
+            <h4>TRENDTHREAD</h4>
+            <p>Elevating your everyday style with premium apparel.</p>
+        </div>
+        <div>
+            <h5>Customer Care</h5>
+            <ul>
+                <li><a href="#">Shipping Policy</a></li>
+                <li><a href="#">Returns & Exchanges</a></li>
+            </ul>
+        </div>
+        <div>
+            <h5>Follow Us</h5>
+            <div class="social-icons">
+                <i class="fa-brands fa-instagram"></i>
+                <i class="fa-brands fa-facebook"></i>
+                <i class="fa-brands fa-twitter"></i>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">© 2026 TrendThread Inc. All Rights Reserved.</div>
+</footer>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="/" class="logo">TREND<span>THREAD</span></a>
+            <div class="nav-links">
+                <a href="/">Shop All</a>
+                <a href="/admin">Dashboard</a>
+                <a href="#" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i><span id="cart-count">0</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- START OF GLOBAL CHATBOT -->
+    <div id="chat-container">
+        <div id="chat-window" style="display: none;">
+            <div id="chat-header">TrendThread Assistant</div>
+            <div id="chat-messages"></div>
+            <div id="chat-input-area">
+                <input type="text" id="user-input" placeholder="Type a message...">
+                <button onclick="sendMessage()" id="send-btn">Send</button>
+            </div>
+        </div>
+        <button id="chat-toggle" type="button">💬</button>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const chatToggle = document.getElementById('chat-toggle');
+        const userInput = document.getElementById('user-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Toggle Chat
+        chatToggle.onclick = () => {
+            chatWindow.style.display = (chatWindow.style.display === 'none' || chatWindow.style.display === '') ? 'flex' : 'none';
+        };
+
+        // Enter Key
+        userInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const msg = userInput.value.trim();
+            if (!msg) return;
+
+            appendMessage(msg, 'user-msg');
+            userInput.value = '';
+
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'msg bot-msg';
+            typingDiv.id = 'temp-typing';
+            typingDiv.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await response.json();
+
+                const temp = document.getElementById('temp-typing');
+                if (temp) temp.remove();
+
+                appendMessage(data.reply, 'bot-msg');
+            } catch (e) {
+                const temp = document.getElementById('temp-typing');
+                if (temp) temp.remove();
+                appendMessage("Connection error.", 'bot-msg');
+            }
+        }
+
+        function appendMessage(text, className) {
+            const div = document.createElement('div');
+            div.className = `msg ${className}`;
+            if (className === 'bot-msg') {
+                let formattedText = text.replace(/([^\n])\n\|/g, "$1\n\n|");
+                div.innerHTML = marked.parse(formattedText);
+            } else {
+                div.innerText = text;
+            }
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function addToCart(productID) {
+            try {
+                const response = await fetch('/add_to_cart' + productID, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productID })
+                });
+
+                if (response.status == 401) {
+                    window.location.href = "/login"; //redirect to login if not logged in
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.success) { // update number in navbar cart icon
+                    const cartBadge = document.querySelector('.cart-icon span');
+                    if (cartBadge) { cartBadge.innertext = data.cart_count || data.total_items };
+
+                    alert("Item added to cart!");
+                }
+            }
+            catch (e) {
+                console.error("Error adding to cart.", e);
+            }
+            
+            //this code runs when the page loads and add attaches function to uttons
+            docuent.addEventListener('click', function(event){
+                if(event.target.classlist.contains('add-to-bag-btn')){
+                    const productID = event.target.getAttribute('data-id');
+                    addToCart(productID);
+                }
+            })
+
+        }
+    </script>
+</body>
+
+</html>
