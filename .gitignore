@@ -16,3 +16,8 @@ Thumbs.db
 db.png
 AI_Powered_Cloth_Store_Action_Plan.docx
 AI_Powered_Cloth_Store_Action_Plan.pdf
+
+# Ignore Node modules (React)
+node_modules/
+build/
+.DS_Store

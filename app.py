@@ -302,7 +302,7 @@ def view_cart():
         #fetch only the proucts in session cart
         placeholders = ', '.join(['%s'] * len(cart))
         query = f"SELECT id, name, price FROM products WHERE id in({placeholders})"
-        cursor.execute(quesry, list(cart.keys()))
+        cursor.execute(query, list(cart.keys()))
         products = cursor.fetchall()
 
         for p in products:

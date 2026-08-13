@@ -1,8 +1,13 @@
-import google.generativeai as genai
 from database import get_db_connection
+import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+load_dotenv()
+api_key = os.getenv("GEMINI_API_KEY")
 
 # Configure Gemini
-genai.configure(api_key="AIzaSyAQhka8nDGPJkb9BjBIr3SQFStm7kzOMWQ")
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 def get_store_context():
