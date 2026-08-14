@@ -7,9 +7,21 @@ from chatbot import ask_chatbot
 app = Flask(__name__)
 app.secret_key = "secret123" # Required for flashing messages
 
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+# cors settings to allow communication
+CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "*"}})
 
-# Add this to backend/app.py
+@app.route('/api/products', methods=['GET'])
+def get_products():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM products")
+        products = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify(products)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/products/<int:product_id>', methods=['GET'])
 def get_product_details(product_id):
